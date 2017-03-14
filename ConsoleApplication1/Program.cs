@@ -68,7 +68,7 @@ namespace ConsoleApplication1
                         do
                         {
                             playerFirst = GetRandomNumber(firstParametr, 4);
-                            playerSecond = GetRandomNumber(secondParametr, 4); //todo change second parametr to 13
+                            playerSecond = GetRandomNumber(secondParametr, 13);
                         } while (cards[playerFirst, playerSecond]); // If card is exist, trying to get another one
 
                         playerSum += GetCardValue(playerSecond, true);
