@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -26,88 +26,130 @@ namespace ConsoleApplication1
         static int computerSecond;
         static string[] consoleOutput;
         static int consoleIter;
+        static bool playerWin;
+        static bool wannaPlay = true;
 
         static void Main(string[] args)
         {
-            //Initialize GameLoop
-            Init();
-
-            //Getting cards for player
-            consoleOutput[0] = "Сумма ваших карт: " + Convert.ToString(playerSum) + "\n";
-            consoleIter++;
-            playerFirst = GetRandomNumber(firstParametr, 4);
-            playerSecond = GetRandomNumber(secondParametr, 13);
-            playerSum += GetCardValue(playerSecond);
-            InitNewCard(playerFirst, playerSecond); // 1 - карта игрока
-            consoleIter++;
-
-            do
+            while (wannaPlay)
             {
+                //Initialize GameLoop
+                Init();
+
+                //Getting cards for player
+                consoleOutput[0] = "Сумма ваших карт: " + Convert.ToString(playerSum) + "\n";
+                consoleIter++;
                 playerFirst = GetRandomNumber(firstParametr, 4);
                 playerSecond = GetRandomNumber(secondParametr, 13);
-            } while (cards[playerFirst, playerSecond]);
-            playerSum += GetCardValue(playerSecond);
-            InitNewCard(playerFirst, playerSecond); // 2 - карта игрока
-            consoleIter++;
-            consoleOutput[0] = "Сумма ваших карт: " + Convert.ToString(playerSum) + "\n";
+                playerSum += GetCardValue(playerSecond, true);
+                InitNewCard(playerFirst, playerSecond); // 1 - карта игрока
+                consoleIter++;
 
-            //Getting cards for computer
-            do
-            {
-                computerFirst = GetRandomNumber(firstParametr, 4);
-                computerSecond = GetRandomNumber(secondParametr, 13);
-            } while (cards[computerFirst, computerSecond]);
-            computerSum += GetCardValue(computerSecond); // 3 - карта компьютера
-            consoleIter++; 
-
-            // Вывод в консоль
-            WriteToConsole();
-
-            //While Sum under 21 asking player to take the card and if he agreed, take it
-            while (playerSum <= 21)
-            {
-                if (AskQuestion("Хотите ли вы взять еще карту?"))
-                {
-                    MoveComputerCards();
-                    //Getting new card
-                    do
-                    {
-                        playerFirst = GetRandomNumber(firstParametr, 4);
-                        playerSecond = GetRandomNumber(secondParametr, 13);
-                    } while (cards[playerFirst, playerSecond]); // If card is exist, trying to get another one
-
-                    playerSum += GetCardValue(playerSecond);
-                    consoleOutput[0] = "Сумма ваших карт: " + Convert.ToString(playerSum) + "\n";
-                    consoleIter++;
-                    WriteToConsole();
-                } else
-                {
-                    break;
-                }
-            }
-
-            //Computer logic
-            //if Sum under or equals 17 take card else no
-            while (computerSum <= 17)
-            {
                 do
                 {
-                    computerFirst = GetRandomNumber(firstParametr, 4);
-                    computerSecond = GetRandomNumber(secondParametr, 13);
-                } while (cards[computerFirst, computerSecond]);
-                InitNewCard(computerFirst, computerSecond);
+                    playerFirst = GetRandomNumber(firstParametr, 4);
+                    playerSecond = GetRandomNumber(secondParametr, 13);
+                } while (cards[playerFirst, playerSecond]);
+                playerSum += GetCardValue(playerSecond, true);
+                InitNewCard(playerFirst, playerSecond); // 2 - карта игрока
+                consoleIter++;
+                consoleOutput[0] = "Сумма ваших карт: " + Convert.ToString(playerSum) + "\n";
+
+                // Вывод в консоль
+                WriteToConsole();
+
+                //While Sum under 21 asking player to take the card and if he agreed, take it
+                while (playerSum <= 21)
+                {
+                    if (AskQuestion("Хотите ли вы взять еще карту?"))
+                    {
+                        //MoveConsole();
+                        //Getting new card
+                        do
+                        {
+                            playerFirst = GetRandomNumber(firstParametr, 4);
+                            playerSecond = GetRandomNumber(secondParametr, 4); //todo change second parametr to 13
+                        } while (cards[playerFirst, playerSecond]); // If card is exist, trying to get another one
+
+                        playerSum += GetCardValue(playerSecond, true);
+                        consoleOutput[0] = "Сумма ваших карт: " + Convert.ToString(playerSum) + "\n";
+                        InitNewCard(playerFirst, playerSecond);
+                        consoleIter++;
+                        WriteToConsole();
+                        //MoveConsole();
+                    }
+                    else
+                    {
+                        break;
+                    }
+                }
+                WriteToConsole();
+                if (playerSum <= 21)
+                {
+                    //Computer logic
+                    //if Sum under or equals 17 take card else no
+                    int indexOfComputerSum = consoleIter + 1;
+                    while (computerSum <= 17)
+                    {
+                        System.Threading.Thread.Sleep(1000);
+                        do
+                        {
+                            computerFirst = GetRandomNumber(firstParametr, 4);
+                            computerSecond = GetRandomNumber(secondParametr, 13);
+                        } while (cards[computerFirst, computerSecond]);
+                        computerSum += GetCardValue(computerSecond, false);
+                        InitNewCard(computerFirst, computerSecond);
+                        consoleOutput[indexOfComputerSum] = "Сумма карт компьютера: " + Convert.ToString(computerSum) + "\n";
+                        consoleIter++;
+                        WriteToConsole();
+                    }
+                }
+                else
+                {
+                    playerWin = false;
+                    consoleIter++;
+                    consoleOutput[consoleIter] = "Вы проиграли! Перебор! (Нужно набрать 21 и менее очков, чтобы выиграть)\n";
+                    WriteToConsole();
+                }
+
+                if ((computerSum == playerSum || computerSum > 21) && playerWin)
+                {
+                    consoleIter++;
+                    consoleOutput[consoleIter] = "Вы победили!\n";
+                    WriteToConsole();
+                }
+                else
+                {
+                    consoleIter++;
+                    consoleOutput[consoleIter] = "Вы проиграли! Компьютер оказался ближе к 21 чем вы!\n";
+                    WriteToConsole();
+                }
+
+
+                consoleIter++;
+                consoleOutput[consoleIter] = "Хотите сыграть еще раз?[y/n]:";
+                WriteToConsole();
+                try
+                {
+                    char stop = char.Parse(Console.ReadLine());
+                    if (stop == 'n' || stop == 'т')
+                        wannaPlay = false;
+                }
+                catch (Exception e)
+                {
+                    //doNothing
+                }
             }
-
-            
-
-            Console.Read();
         }
 
         static void Init()
         {
             Console.Clear();
             System.GC.Collect();
+            playerSum = 0;
+            computerSum = 0;
             consoleOutput = new string[100];
+            playerWin = true;
             consoleIter = 0;
             cards = new bool[4, 13];
             for (int i = 0; i < 4; i++)
@@ -119,18 +161,22 @@ namespace ConsoleApplication1
             }
         }
 
+        static void InitOutput() { 
+}
+
         static void WriteToConsole()
         {
             Console.Clear();
-            for(int i = 0; i < consoleIter; i++)
+            for(int i = 0; i <= consoleIter; i++)
             {
+
                 Console.Write(consoleOutput[i]);
             }
         }
 
         //static Card GetNewCard()
 
-        static int GetRandomNumber(Random rand, int max)
+        static int GetRandomNumber(Random rand, int max) // Rendomizing new card
         {
             for (int i = 0; i < DateTime.Now.Millisecond; i++)
             {
@@ -141,27 +187,45 @@ namespace ConsoleApplication1
 
         static bool AskQuestion(string question)
         {
+            
+            consoleIter++;
+            consoleOutput[consoleIter] = question + "[y/n]:";
+            WriteToConsole();
+//            consoleIter--; comment because it doesn't work for ace
+            char answer = char.Parse(Console.ReadLine());
+            consoleOutput[consoleIter] += "\n";
             while (true)
             {
-                consoleOutput[consoleIter] = question + "[y/n]:";
-                char answer = Convert.ToChar(Console.Read());
                 if (answer == 'y' || answer == 'н')
+                {
+                    consoleOutput[consoleIter] = "";
                     return true;
-                else if (answer == 'n'  || answer == 'т')
+                }
+                else if (answer == 'n' || answer == 'т')
+                    consoleOutput[consoleIter] = "";
                     return false;
             }
 
-
         }
 
-        static int GetCardValue(int cardValue)
+        static int GetCardValue(int cardValue, bool isPlayer)
         {
 
-            if (cardValue == 0) // туз
+            if (cardValue == 0 && isPlayer) // туз
+            {
+                consoleIter++;
                 if (AskQuestion("Взять туза как единицу или одиннадцать?(y - 1; n - 11)"))
                     return 1;
                 else
                     return 11;
+            }
+            else if (cardValue == 0 && !isPlayer)
+            {
+                if (computerSum >= 3 && computerSum <= 10)
+                    return 11;
+                else
+                    return 1;
+            }
             else if (cardValue <= 8) // от 2 до 9
                 return cardValue + 1;
             else if (cardValue <= 12) // от 10 до короля
@@ -171,10 +235,10 @@ namespace ConsoleApplication1
                 
         }
 
-        static void MoveComputerCards()
+        static void MoveConsole()
         {
-            string buf = consoleOutput[consoleIter - 1];
-            consoleOutput[consoleIter] = buf;
+            string buf = consoleOutput[consoleIter];
+            consoleOutput[consoleIter + 1] = buf;
         }
 
         static void InitNewCard(int first, int second)
@@ -244,7 +308,7 @@ namespace ConsoleApplication1
                     throw new Exception("Unknown index");
             }
             cards[first, second] = true;
-
+            consoleIter += 2;
             consoleOutput[consoleIter] = buildString;
         }
     }
