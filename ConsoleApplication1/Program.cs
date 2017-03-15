@@ -28,12 +28,15 @@ namespace ConsoleApplication1
         static int consoleIter;
         static bool playerWin;
         static bool wannaPlay = true;
+        static long playerAmount = 1000;
+        static long playerStake;
 
         static void Main(string[] args)
         {
             while (wannaPlay)
             {
                 //Initialize GameLoop
+                playerStake = AskForStake();
                 Init();
 
                 //Getting cards for player
@@ -109,6 +112,7 @@ namespace ConsoleApplication1
                     playerWin = false;
                     consoleIter++;
                     consoleOutput[consoleIter] = "Вы проиграли! Перебор! (Нужно набрать 21 и менее очков, чтобы выиграть)\n";
+                    playerAmount -= playerStake;
                     WriteToConsole();
                 }
 
@@ -116,12 +120,14 @@ namespace ConsoleApplication1
                 {
                     consoleIter++;
                     consoleOutput[consoleIter] = "Вы победили!\n";
+                    playerAmount += playerStake;
                     WriteToConsole();
                 }
                 else
                 {
                     consoleIter++;
                     consoleOutput[consoleIter] = "Вы проиграли! Компьютер оказался ближе к 21 чем вы!\n";
+                    playerAmount -= playerStake;
                     WriteToConsole();
                 }
 
@@ -161,8 +167,34 @@ namespace ConsoleApplication1
             }
         }
 
-        static void InitOutput() { 
-}
+        static long AskForStake()
+        {
+            consoleOutput = new string[100];
+            while (true)
+            {
+                consoleOutput[0] = "У вас осталось " + Convert.ToString(playerAmount) + "\n";
+                consoleOutput[1] = "Введите вашу ставку: ";
+                consoleIter = 5;
+                WriteToConsole();
+                try
+                {
+                    long toReturn = long.Parse(Console.ReadLine());
+                    if (toReturn > playerAmount)
+                    {
+                        throw new Exception();
+                    }
+                    else
+                    {
+                        return toReturn;
+                    }
+                } 
+                catch (Exception e)
+                {
+
+                }
+            }
+
+        }
 
         static void WriteToConsole()
         {
