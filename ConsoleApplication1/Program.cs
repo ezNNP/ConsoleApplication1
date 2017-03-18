@@ -116,7 +116,7 @@ namespace ConsoleApplication1
                     WriteToConsole();
                 }
 
-                if ((computerSum == playerSum || computerSum > 21) && playerWin)
+                if ((computerSum <= playerSum || computerSum > 21) && playerWin)
                 {
                     consoleIter++;
                     consoleOutput[consoleIter] = "Вы победили!\n";
@@ -125,10 +125,13 @@ namespace ConsoleApplication1
                 }
                 else
                 {
-                    consoleIter++;
-                    consoleOutput[consoleIter] = "Вы проиграли! Компьютер оказался ближе к 21 чем вы!\n";
-                    playerAmount -= playerStake;
-                    WriteToConsole();
+                    if (playerWin)
+                    {
+                        consoleIter++;
+                        consoleOutput[consoleIter] = "Вы проиграли! Компьютер оказался ближе к 21 чем вы!\n";
+                        playerAmount -= playerStake;
+                        WriteToConsole();
+                    }
                 }
 
 
@@ -179,7 +182,7 @@ namespace ConsoleApplication1
                 try
                 {
                     long toReturn = long.Parse(Console.ReadLine());
-                    if (toReturn > playerAmount)
+                    if (toReturn > playerAmount || toReturn <= 0)
                     {
                         throw new Exception();
                     }
